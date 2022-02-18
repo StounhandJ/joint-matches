@@ -21,9 +21,25 @@ func NewDataBase() *DataBase {
 	return &DataBase{db: db}
 }
 
-func (b DataBase) execute(s struct{}) {
+func (b DataBase) Insert(s struct{}) {
+	field, marks := getMarksValues(s)
+	b.db.Exec(fmt.Sprintf("insert into %s(%s) values(%s)", reflect.TypeOf(s).Name(), field, marks))
+}
+
+func getMarksValues(s struct{}) (string, string) {
 	t := reflect.TypeOf(s)
+	count := 0
+	var str1, str2 string
 	for i := 0; i < t.NumField(); i++ {
-		fmt.Printf("%+v\n", t.Field(i))
+		v1, v2 := t.Field(i).Tag.Lookup("pg")
+		if v2 {
+			str1 += fmt.Sprintf("%s, ", v1)
+			str2 += fmt.Sprintf("$%s, ", v1)
+			count += 1
+		}
 	}
+	if count == 0 {
+		return "", ""
+	}
+	return str1[0 : len(str1)-2], str2[0 : len(str2)-2]
 }
