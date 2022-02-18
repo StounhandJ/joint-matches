@@ -43,7 +43,7 @@ func getMatchesIds(summoner model.Summoner, start int) []string {
 
 	_ = json.
 		NewDecoder(Get(
-			"ru",
+			"europe",
 			fmt.Sprintf("lol/match/v5/matches/by-puuid/%s/ids", summoner.Puuid),
 			map[string]string{"count": "100", "start": strconv.Itoa(start)})).
 		Decode(&ids)

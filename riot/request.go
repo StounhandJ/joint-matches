@@ -15,7 +15,7 @@ func Get(server string, uri string, data map[string]string) io.ReadCloser {
 	}
 
 	q := req.URL.Query()
-	q.Add("api_key", "RGAPI-e8de3f30-d68c-469f-b489-aa96f2674d42")
+	q.Add("api_key", "RGAPI-68e10570-991c-4acc-8a58-27c1b8c08ab7")
 
 	if data != nil {
 		for key, value := range data {
