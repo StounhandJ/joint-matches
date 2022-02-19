@@ -24,6 +24,7 @@ func Get(server string, uri string, data map[string]string) io.ReadCloser {
 	}
 	req.URL.RawQuery = q.Encode()
 
+nextCheck:
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
@@ -32,7 +33,7 @@ func Get(server string, uri string, data map[string]string) io.ReadCloser {
 
 	if resp.StatusCode == 429 {
 		time.Sleep(5 * time.Second)
-		return Get(server, uri, data)
+		goto nextCheck
 	}
 
 	return resp.Body
