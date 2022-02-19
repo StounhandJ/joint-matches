@@ -1,8 +1,8 @@
 package main
 
 import (
-	"awesomeProject2/database"
-	"awesomeProject2/model"
+	"joint-games/database"
+	"joint-games/model"
 )
 
 func main() {

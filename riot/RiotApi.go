@@ -1,9 +1,9 @@
 package riot
 
 import (
-	"awesomeProject2/model"
 	"encoding/json"
 	"fmt"
+	"joint-games/model"
 	"strconv"
 )
 

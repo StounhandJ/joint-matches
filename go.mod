@@ -1,4 +1,4 @@
-module awesomeProject2
+module joint-games
 
 go 1.17
 
