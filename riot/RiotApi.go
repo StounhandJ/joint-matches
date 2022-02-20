@@ -28,7 +28,7 @@ func GetMatches(summoner model.Summoner) []model.Match {
 		matchesId := getMatchesIds(summoner, i*100)
 
 		for _, id := range matchesId {
-			matches = append(matches, model.Match{Id: id})
+			matches = append(matches, GetMatch(id))
 		}
 
 		work = len(matchesId) == 100
@@ -51,25 +51,21 @@ func getMatchesIds(summoner model.Summoner, start int) []string {
 	return ids
 }
 
-//func GetMatch(id string) []model.Match {
-//
-//	var matches []model.Match
-//
-//	re := true
-//	i := 1
-//
-//	for re {
-//		var arr []string
-//
-//		_ = json.NewDecoder(getMatchesIds(summoner, i*100)).Decode(&arr)
-//
-//		for _, element := range arr {
-//			matches = append(matches, model.Match{Id: element})
-//		}
-//
-//		re = len(arr) == 100
-//		i += 1
-//	}
-//
-//	return matches
-//}
+func GetMatch(id string) model.Match {
+
+	var matchData map[string]interface{}
+	match := model.Match{Id: id}
+
+	_ = json.
+		NewDecoder(Get(
+			"europe",
+			fmt.Sprintf("lol/match/v5/matches/%s", id),
+			nil)).
+		Decode(&matchData)
+
+	for _, puuid := range matchData["metadata"].(map[string]interface{})["participants"].([]interface{}) {
+		match.Summoners = append(match.Summoners, model.Summoner{Puuid: puuid.(string)})
+	}
+
+	return match
+}
