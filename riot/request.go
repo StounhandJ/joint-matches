@@ -5,6 +5,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -15,7 +16,7 @@ func Get(server string, uri string, data map[string]string) io.ReadCloser {
 	}
 
 	q := req.URL.Query()
-	q.Add("api_key", "RGAPI-a82f7846-be49-44ae-b695-0eb0483a43c5")
+	q.Add("api_key", os.Getenv("RIOT_KEY"))
 
 	if data != nil {
 		for key, value := range data {
@@ -33,7 +34,7 @@ nextCheck:
 
 	if resp.StatusCode == 429 {
 		fmt.Println("Request: go sleep")
-		time.Sleep(10 * time.Second)
+		time.Sleep(1 * time.Minute)
 		goto nextCheck
 	}
 

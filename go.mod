@@ -2,7 +2,10 @@ module joint-games
 
 go 1.17
 
-require github.com/go-pg/pg/v10 v10.10.6
+require (
+	github.com/go-pg/pg/v10 v10.10.6
+	github.com/joho/godotenv v1.4.0
+)
 
 require (
 	github.com/go-pg/zerochecker v0.2.0 // indirect

@@ -2,28 +2,52 @@ package main
 
 import (
 	"fmt"
+	"github.com/joho/godotenv"
 	"joint-games/database"
 	"joint-games/model"
 	"joint-games/riot"
+	"log"
+	"os"
+	"strconv"
 )
 
 var (
-	db database.DataBase
+	db  database.DataBase
+	err error
 )
 
 func main() {
+	if len(os.Args) == 1 {
+		fmt.Println("Specify the player's nickname as the first parameter")
+		os.Exit(2)
+	}
+
+	summoner := riot.GetSummoner(os.Args[1])
+	if summoner.Id == "" {
+		fmt.Println("The summoner was not found")
+		os.Exit(2)
+	}
+
+	start := 0
+	if len(os.Args) >= 3 {
+		start, err = strconv.Atoi(os.Args[2])
+		if err != nil {
+			fmt.Println("The start indent must be a number")
+			os.Exit(2)
+		}
+	}
 
 	db = *database.NewDataBase()
 	db.Db.Model(&model.MatchSummoner{})
 	var summoners []model.Summoner
-	i := 0
 
-	for match := range riot.GetMatches(riot.GetSummoner("StounhandJ")) {
-		fmt.Println(i)
+	i := 0
+	for match := range riot.GetMatches(summoner, start) {
 		i += 1
 
 		_ = db.Db.Model(&match).Where("match_id = ?", match.Id).Select()
 		if match.IdDB != 0 {
+			fmt.Println(fmt.Sprintf("%d Match(%s) already added", i, match.Id))
 			continue
 		}
 
@@ -31,6 +55,8 @@ func main() {
 		copy(summoners, match.Summoners[:])
 
 		saveMatch(&match)
+
+		fmt.Println(fmt.Sprintf("%d Match(%s) saved", i, match.Id))
 	}
 }
 
@@ -78,5 +104,14 @@ func saveMatch(match *model.Match) {
 		if err != nil {
 			fmt.Println("Error (saveMatch): ", err)
 		}
+	}
+}
+
+func init() {
+
+	err := godotenv.Load(".env")
+
+	if err != nil {
+		log.Fatal("Error loading .env file")
 	}
 }
