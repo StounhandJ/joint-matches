@@ -2,6 +2,7 @@ package riot
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"joint-games/model"
 	"strconv"
@@ -28,7 +29,12 @@ func GetMatches(summoner model.Summoner) []model.Match {
 		matchesId := getMatchesIds(summoner, i*100)
 
 		for _, id := range matchesId {
-			matches = append(matches, GetMatch(id))
+			newMatch, err := GetMatch(id)
+			if err != nil {
+				fmt.Println(fmt.Sprintf("Error (GetMatches) %s: %s", id, err))
+				continue
+			}
+			matches = append(matches, newMatch)
 		}
 
 		work = len(matchesId) == 100
@@ -51,7 +57,7 @@ func getMatchesIds(summoner model.Summoner, start int) []string {
 	return ids
 }
 
-func GetMatch(id string) model.Match {
+func GetMatch(id string) (model.Match, error) {
 
 	var matchData map[string]interface{}
 	match := model.Match{Id: id}
@@ -63,9 +69,12 @@ func GetMatch(id string) model.Match {
 			nil)).
 		Decode(&matchData)
 
+	if _, ok := matchData["status"]; ok {
+		return match, errors.New("match not found")
+	}
 	for _, puuid := range matchData["metadata"].(map[string]interface{})["participants"].([]interface{}) {
 		match.Summoners = append(match.Summoners, model.Summoner{Puuid: puuid.(string)})
 	}
 
-	return match
+	return match, nil
 }
