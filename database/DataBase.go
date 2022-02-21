@@ -12,10 +12,10 @@ type DataBase struct {
 
 func NewDataBase() *DataBase {
 	db := pg.Connect(&pg.Options{
-		User:     "root",
-		Password: "root_mpt",
-		Database: "jg",
-		Addr:     "194.169.163.29:5432",
+		User:     os.Getenv("DB_USER"),
+		Password: os.Getenv("DB_PASSWORD"),
+		Database: os.Getenv("DB_DATABASE"),
+		Addr:     os.Getenv("DB_ADDR"),
 	})
 	if db.Ping(context.Background()) != nil {
 		os.Exit(1)
