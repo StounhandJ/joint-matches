@@ -5,7 +5,12 @@ import (
 	"fmt"
 	"joint-games/model"
 	"strconv"
+	"time"
 )
+
+type empty struct {
+}
+type semaphore chan empty
 
 func GetSummoner(name string) model.Summoner {
 	var summoner model.Summoner
@@ -16,26 +21,27 @@ func GetSummoner(name string) model.Summoner {
 	return summoner
 }
 
-func GetMatches(summoner model.Summoner) []model.Match {
+func GetMatches(summoner model.Summoner) chan model.Match {
+	ch := make(chan model.Match)
 
-	var matches []model.Match
+	go func() {
+		work := true
+		i := 1
 
-	work := true
-	i := 1
+		for work {
 
-	for work {
+			matchesId := getMatchesIds(summoner, i*100)
 
-		matchesId := getMatchesIds(summoner, i*100)
+			for _, id := range matchesId {
+				ch <- GetMatch(id)
+			}
 
-		for _, id := range matchesId {
-			matches = append(matches, GetMatch(id))
+			work = len(matchesId) == 100
+			i += 1
 		}
+	}()
 
-		work = len(matchesId) == 100
-		i += 1
-	}
-
-	return matches
+	return ch
 }
 
 func getMatchesIds(summoner model.Summoner, start int) []string {
@@ -66,6 +72,16 @@ func GetMatch(id string) model.Match {
 	for _, puuid := range matchData["metadata"].(map[string]interface{})["participants"].([]interface{}) {
 		match.Summoners = append(match.Summoners, model.Summoner{Puuid: puuid.(string)})
 	}
+	match.Start = time.Unix(int64(matchData["info"].(map[string]interface{})["gameCreation"].(float64))/1000, 0)
 
 	return match
+}
+
+func GetSummonerPuuid(puuid string) model.Summoner {
+	var summoner model.Summoner
+
+	_ = json.
+		NewDecoder(Get("ru", fmt.Sprintf("lol/summoner/v4/summoners/by-puuid/%s", puuid), nil)).
+		Decode(&summoner)
+	return summoner
 }

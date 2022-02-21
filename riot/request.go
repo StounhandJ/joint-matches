@@ -32,7 +32,8 @@ nextCheck:
 	}
 
 	if resp.StatusCode == 429 {
-		time.Sleep(5 * time.Second)
+		fmt.Println("Request: go sleep")
+		time.Sleep(10 * time.Second)
 		goto nextCheck
 	}
 
