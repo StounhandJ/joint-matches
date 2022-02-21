@@ -26,7 +26,7 @@ func GetMatches(summoner model.Summoner) chan model.Match {
 
 	go func() {
 		work := true
-		i := 1
+		i := 0
 
 		for work {
 
