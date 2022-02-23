@@ -13,7 +13,7 @@ func GetSummoner(name string) model.Summoner {
 	var summoner model.Summoner
 
 	_ = json.
-		NewDecoder(Get("ru", fmt.Sprintf("lol/summoner/v4/summoners/by-name/%s", name), nil)).
+		NewDecoder(Get(Region, fmt.Sprintf("lol/summoner/v4/summoners/by-name/%s", name), nil)).
 		Decode(&summoner)
 
 	return summoner
@@ -52,7 +52,7 @@ func getMatchesIds(summoner model.Summoner, start int) []string {
 
 	_ = json.
 		NewDecoder(Get(
-			"europe",
+			GlobalRegion,
 			fmt.Sprintf("lol/match/v5/matches/by-puuid/%s/ids", summoner.Puuid),
 			map[string]string{"count": "100", "start": strconv.Itoa(start)})).
 		Decode(&ids)
@@ -67,7 +67,7 @@ func GetMatch(id string) (model.Match, error) {
 
 	_ = json.
 		NewDecoder(Get(
-			"europe",
+			GlobalRegion,
 			fmt.Sprintf("lol/match/v5/matches/%s", id),
 			nil)).
 		Decode(&matchData)
@@ -84,11 +84,38 @@ func GetMatch(id string) (model.Match, error) {
 	return match, nil
 }
 
+func GetActiveMatch(summonerId string) (model.Match, error) {
+
+	var matchData map[string]interface{}
+	match := model.Match{}
+
+	_ = json.
+		NewDecoder(Get(
+			Region,
+			fmt.Sprintf("lol/spectator/v4/active-games/by-summoner/%s", summonerId),
+			nil)).
+		Decode(&matchData)
+
+	if _, ok := matchData["status"]; ok {
+		return match, errors.New("match not found")
+	}
+
+	for _, participantsData := range matchData["participants"].([]interface{}) {
+		if !participantsData.(map[string]interface{})["bot"].(bool) {
+			match.Summoners = append(match.Summoners, model.Summoner{
+				Id:   participantsData.(map[string]interface{})["summonerId"].(string),
+				Name: participantsData.(map[string]interface{})["summonerName"].(string)})
+		}
+	}
+
+	return match, nil
+}
+
 func GetSummonerPuuid(puuid string) model.Summoner {
 	var summoner model.Summoner
 
 	_ = json.
-		NewDecoder(Get("ru", fmt.Sprintf("lol/summoner/v4/summoners/by-puuid/%s", puuid), nil)).
+		NewDecoder(Get(Region, fmt.Sprintf("lol/summoner/v4/summoners/by-puuid/%s", puuid), nil)).
 		Decode(&summoner)
 	return summoner
 }

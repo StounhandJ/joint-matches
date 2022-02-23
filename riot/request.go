@@ -38,5 +38,10 @@ nextCheck:
 		goto nextCheck
 	}
 
+	if resp.StatusCode == 403 {
+		fmt.Println("Forbidden (check your key)")
+		os.Exit(1)
+	}
+
 	return resp.Body
 }

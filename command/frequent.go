@@ -6,30 +6,15 @@ import (
 	"joint-games/model"
 	"joint-games/riot"
 	"os"
-	"strconv"
 )
 
-func Frequent() {
+func Frequent(summonerName string, countGame int) {
 	db := database.NewDataBase()
 
-	if len(os.Args) == 2 {
-		fmt.Println("Specify the player's nickname as the first parameter")
-		os.Exit(2)
-	}
-
-	summoner := riot.GetSummoner(os.Args[2])
+	summoner := riot.GetSummoner(summonerName)
 	if summoner.Id == "" {
 		fmt.Println("The summoner was not found")
 		os.Exit(2)
-	}
-
-	countGame := 3
-	if len(os.Args) >= 4 {
-		countGame, err = strconv.Atoi(os.Args[3])
-		if err != nil {
-			fmt.Println("The start indent must be a number")
-			os.Exit(2)
-		}
 	}
 
 	var g []model.FrequentSummoner

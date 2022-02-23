@@ -6,37 +6,23 @@ import (
 	"joint-games/model"
 	"joint-games/riot"
 	"os"
-	"strconv"
 )
 
 var (
-	db  database.DataBase
-	err error
+	db database.DataBase
 )
 
-func Parser() {
-	if len(os.Args) == 2 {
-		fmt.Println("Specify the player's nickname as the first parameter")
-		os.Exit(2)
-	}
+func Parser(summonerName string, start int) {
 
-	summoner := riot.GetSummoner(os.Args[2])
+	summoner := riot.GetSummoner(summonerName)
 	if summoner.Id == "" {
 		fmt.Println("The summoner was not found")
 		os.Exit(2)
 	}
 
-	start := 0
-	if len(os.Args) >= 4 {
-		start, err = strconv.Atoi(os.Args[3])
-		if err != nil {
-			fmt.Println("The start indent must be a number")
-			os.Exit(2)
-		}
-	}
-
 	db = *database.NewDataBase()
 	db.Db.Model(&model.MatchSummoner{})
+
 	var summoners []model.Summoner
 
 	i := 0

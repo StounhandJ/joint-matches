@@ -3,29 +3,107 @@ package main
 import (
 	"fmt"
 	"github.com/joho/godotenv"
+	"github.com/urfave/cli/v2"
 	"joint-games/command"
+	"joint-games/riot"
 	"log"
 	"os"
 )
 
 func main() {
-	if len(os.Args) == 1 {
-		fmt.Println("Joint games for League of Legends")
-		os.Exit(2)
+
+	var start, countGame int
+
+	app := &cli.App{
+		Name:  "boom",
+		Usage: "make an explosive entrance",
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:        "global-region",
+				Aliases:     []string{"gr"},
+				Usage:       "global region (europe, americas, asia)",
+				EnvVars:     []string{"GLOBAL_REGION"},
+				DefaultText: os.Getenv("GLOBAL_REGION"),
+				Destination: &riot.GlobalRegion,
+			},
+			&cli.StringFlag{
+				Name:        "region",
+				Aliases:     []string{"r"},
+				Usage:       "server region (ru, br1, euw1, la1, ...)",
+				EnvVars:     []string{"REGION"},
+				DefaultText: os.Getenv("REGION"),
+				Destination: &riot.Region,
+			},
+		},
+		Commands: []*cli.Command{
+			{
+				Name:    "parser",
+				Aliases: []string{"p"},
+				Usage:   "Parses all the summoner's games",
+				Flags: []cli.Flag{
+					&cli.IntFlag{
+						Name:        "start",
+						Aliases:     []string{"r"},
+						Usage:       "Starting countdown for games",
+						Value:       0,
+						DefaultText: "0",
+						Destination: &start,
+					},
+				},
+				Action: func(c *cli.Context) error {
+					if c.Args().First() == "" {
+						fmt.Println("Specify the player's nickname as the first parameter")
+						return nil
+					}
+					command.Parser(c.Args().First(), start)
+					return nil
+				},
+			},
+			{
+				Name:    "frequent",
+				Aliases: []string{"f"},
+				Usage:   "Getting Summoners you play with more often",
+				Flags: []cli.Flag{
+					&cli.IntFlag{
+						Name:        "count",
+						Aliases:     []string{"c"},
+						Usage:       "Minimum number of games with the summoner",
+						Value:       4,
+						DefaultText: "4",
+						Destination: &countGame,
+					},
+				},
+				Action: func(c *cli.Context) error {
+					if c.Args().First() == "" {
+						fmt.Println("Specify the player's nickname as the first parameter")
+						return nil
+					}
+					command.Frequent(c.Args().First(), countGame)
+					return nil
+				},
+			},
+			{
+				Name:    "active",
+				Aliases: []string{"a"},
+				Usage:   "Checks an active match and finds past players",
+				Action: func(c *cli.Context) error {
+					if c.Args().First() == "" {
+						fmt.Println("Specify the player's nickname as the first parameter")
+						return nil
+					}
+
+					command.ActiveGame(c.Args().First())
+					return nil
+				},
+			},
+		},
 	}
 
-	switch os.Args[1] {
-	case "help":
-		command.Help()
-		break
-	case "parser":
-		command.Parser()
-	case "frequent":
-		command.Frequent()
-	default:
-		command.Help()
-		break
+	err := app.Run(os.Args)
+	if err != nil {
+		log.Fatal(err)
 	}
+	return
 }
 
 func init() {

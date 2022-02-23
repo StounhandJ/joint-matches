@@ -2,6 +2,7 @@ package database
 
 import (
 	"context"
+	"fmt"
 	"github.com/go-pg/pg/v10"
 	"os"
 )
@@ -18,6 +19,7 @@ func NewDataBase() *DataBase {
 		Addr:     os.Getenv("DB_ADDR"),
 	})
 	if db.Ping(context.Background()) != nil {
+		fmt.Println("DataBase: no connection")
 		os.Exit(1)
 	}
 
