@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/joho/godotenv"
 	"github.com/urfave/cli/v2"
-	"joint-games/command"
-	"joint-games/riot"
+	"joint-matches/command"
+	"joint-matches/riot"
 	"log"
 	"os"
 )

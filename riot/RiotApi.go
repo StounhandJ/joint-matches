@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"joint-games/model"
+	"joint-matches/model"
 	"strconv"
 	"time"
 )

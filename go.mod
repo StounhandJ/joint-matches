@@ -1,4 +1,4 @@
-module joint-games
+module joint-matches
 
 go 1.17
 

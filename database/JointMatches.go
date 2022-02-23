@@ -1,7 +1,7 @@
 package database
 
 import (
-	"joint-games/model"
+	"joint-matches/model"
 )
 
 func JointMatches(summonerOne model.Summoner, summonerTwo model.Summoner) ([]model.Match, error) {

@@ -2,9 +2,9 @@ package command
 
 import (
 	"fmt"
-	"joint-games/database"
-	"joint-games/model"
-	"joint-games/riot"
+	"joint-matches/database"
+	"joint-matches/model"
+	"joint-matches/riot"
 	"os"
 )
 

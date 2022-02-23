@@ -1,6 +1,6 @@
 package database
 
-import "joint-games/model"
+import "joint-matches/model"
 
 func LastMatch(summoner model.Summoner) (*model.Match, error) {
 

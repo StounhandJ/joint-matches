@@ -1,7 +1,7 @@
 package database
 
 import (
-	"joint-games/model"
+	"joint-matches/model"
 )
 
 func FrequentSummonerInMatch(summoner model.Summoner, countGame int) ([]model.FrequentSummoner, error) {
