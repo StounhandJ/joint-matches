@@ -36,7 +36,7 @@ func Parser(summonerName string, start int) {
 		}
 
 		match.Summoners = getSummoners(&match.Summoners, &summoners)
-		copy(summoners, match.Summoners[:])
+		summoners = append(summoners, match.Summoners...)
 
 		saveMatch(&match)
 

@@ -26,6 +26,9 @@ func ActiveGame(summonerName string) {
 	var resultMatches []model.Match
 
 	for _, matchSummoner := range match.Summoners {
+		if summoner.Id == matchSummoner.Id {
+			continue
+		}
 
 		matches, err := database.JointMatches(summoner, matchSummoner)
 		if err != nil {
@@ -33,10 +36,14 @@ func ActiveGame(summonerName string) {
 			return
 		}
 
-		copy(resultMatches, matches)
+		for i := range matches {
+			matches[i].Summoners = []model.Summoner{matchSummoner}
+		}
+
+		resultMatches = append(resultMatches, matches...)
 	}
 
 	for _, val := range resultMatches {
-		fmt.Println(val.Id, val.Start)
+		fmt.Println(val.Summoners[0], " | ", val)
 	}
 }
