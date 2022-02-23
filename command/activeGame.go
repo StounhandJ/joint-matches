@@ -10,9 +10,6 @@ import (
 
 func ActiveGame(summonerName string) {
 
-	db := database.NewDataBase()
-	db.Db.Model(&model.MatchSummoner{})
-
 	summoner := riot.GetSummoner(summonerName)
 	if summoner.Id == "" {
 		fmt.Println("The summoner was not found")
@@ -29,14 +26,8 @@ func ActiveGame(summonerName string) {
 	var resultMatches []model.Match
 
 	for _, matchSummoner := range match.Summoners {
-		var matches []model.Match
-		_, err := db.Db.Query(
-			&matches,
-			"select matches.id, matches.match_id, matches.start "+
-				"from match_summoners as main "+
-				"join match_summoners as dop on main.match_id = dop.match_id "+
-				"join matches on matches.id = main.match_id "+
-				"where dop.summoner_id = ? and main.summoner_id = ?", matchSummoner.Id, summoner.Id)
+
+		matches, err := database.JointMatches(summoner, matchSummoner)
 		if err != nil {
 			fmt.Println(err)
 			return

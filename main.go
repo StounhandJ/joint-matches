@@ -96,6 +96,20 @@ func main() {
 					return nil
 				},
 			},
+			{
+				Name:    "jointMatches",
+				Aliases: []string{"jm"},
+				Usage:   "Returns joint games with the summoner",
+				Action: func(c *cli.Context) error {
+					if c.Args().Len() != 2 {
+						fmt.Println("It is necessary to specify two nicknames of the summoners")
+						return nil
+					}
+
+					command.JointMatches(c.Args().Get(0), c.Args().Get(1))
+					return nil
+				},
+			},
 		},
 	}
 
