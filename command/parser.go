@@ -12,7 +12,7 @@ var (
 	db database.DataBase
 )
 
-func Parser(summonerName string, start int) {
+func Parser(summonerName string, start int, update bool) {
 
 	summoner := riot.GetSummoner(summonerName)
 	if summoner.Id == "" {
@@ -24,9 +24,20 @@ func Parser(summonerName string, start int) {
 	db.Db.Model(&model.MatchSummoner{})
 
 	var summoners []model.Summoner
+	var startTime int64
+
+	startTime = -1
+	if update {
+		lastMatch, err := database.LastMatch(summoner)
+		if err != nil {
+			fmt.Println("The last match is not found, the parsing of all begins")
+		} else {
+			startTime = lastMatch.Start.Unix()
+		}
+	}
 
 	i := 0
-	for match := range riot.GetMatches(summoner, start) {
+	for match := range riot.GetMatches(summoner, start, startTime) {
 		i += 1
 
 		_ = db.Db.Model(&match).Where("match_id = ?", match.Id).Select()

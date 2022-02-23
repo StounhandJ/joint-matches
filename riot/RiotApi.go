@@ -19,16 +19,17 @@ func GetSummoner(name string) model.Summoner {
 	return summoner
 }
 
-func GetMatches(summoner model.Summoner, start int) chan model.Match {
+func GetMatches(summoner model.Summoner, start int, startTime int64) chan model.Match {
 	ch := make(chan model.Match)
 
 	go func() {
+		defer close(ch)
 		work := true
 		i := start / 100
 
 		for work {
 
-			matchesId := getMatchesIds(summoner, i*100)
+			matchesId := getMatchesIds(summoner, i*100, startTime)
 
 			for _, id := range matchesId {
 				match, err := GetMatch(id)
@@ -47,14 +48,14 @@ func GetMatches(summoner model.Summoner, start int) chan model.Match {
 	return ch
 }
 
-func getMatchesIds(summoner model.Summoner, start int) []string {
+func getMatchesIds(summoner model.Summoner, start int, startTime int64) []string {
 	var ids []string
 
 	_ = json.
 		NewDecoder(Get(
 			GlobalRegion,
 			fmt.Sprintf("lol/match/v5/matches/by-puuid/%s/ids", summoner.Puuid),
-			map[string]string{"count": "100", "start": strconv.Itoa(start)})).
+			map[string]string{"count": "100", "start": strconv.Itoa(start), "startTime": strconv.FormatInt(startTime, 10)})).
 		Decode(&ids)
 
 	return ids

@@ -49,13 +49,18 @@ func main() {
 						DefaultText: "0",
 						Destination: &start,
 					},
+					&cli.BoolFlag{
+						Name:    "update",
+						Aliases: []string{"u"},
+						Usage:   "Parse only the latest non-saved matches",
+					},
 				},
 				Action: func(c *cli.Context) error {
 					if c.Args().First() == "" {
 						fmt.Println("Specify the player's nickname as the first parameter")
 						return nil
 					}
-					command.Parser(c.Args().First(), start)
+					command.Parser(c.Args().First(), start, c.Bool("update"))
 					return nil
 				},
 			},
