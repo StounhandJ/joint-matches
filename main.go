@@ -15,8 +15,8 @@ func main() {
 	var start, countGame int
 
 	app := &cli.App{
-		Name:  "boom",
-		Usage: "make an explosive entrance",
+		Name:  "joint-matches",
+		Usage: "LoL match analysis to find common games with other players",
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:        "global-region",
@@ -39,12 +39,12 @@ func main() {
 			{
 				Name:    "parser",
 				Aliases: []string{"p"},
-				Usage:   "Parses all the summoner's games",
+				Usage:   "Parses all the summoner's matches",
 				Flags: []cli.Flag{
 					&cli.IntFlag{
 						Name:        "start",
 						Aliases:     []string{"r"},
-						Usage:       "Starting countdown for games",
+						Usage:       "The number of missed matches from new to old",
 						Value:       0,
 						DefaultText: "0",
 						Destination: &start,
